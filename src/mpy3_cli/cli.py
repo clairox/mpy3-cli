@@ -1,10 +1,12 @@
 import sys
-import click
 from pathlib import Path
 
+import click
+
 from mpy3_cli.player import Player
-    
+
 ACCEPTED_FILE_TYPES = [".mp3"]
+
 
 @click.command()
 @click.argument("media_url_input")
@@ -21,7 +23,3 @@ def main(media_url_input: str):
 
     player = Player(media_url)
     player.play()
-
-
-
-

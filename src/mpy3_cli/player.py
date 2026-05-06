@@ -1,10 +1,11 @@
 import json
-import pyaudio
-from pyaudio import Stream, PyAudio
-from threading import Thread
-from pathlib import Path
 import subprocess
+from pathlib import Path
 from subprocess import Popen
+from threading import Thread
+
+import pyaudio
+from pyaudio import PyAudio, Stream
 
 CHUNK_SIZE = 1024
 
@@ -25,7 +26,9 @@ class Player:
         self.playback_thread: Thread | None = None
 
     def play(self) -> None:
-        self.input_stream = start_media_stream(self.mrl, self.format, self.codec, self.sample_rate, self.channels)
+        self.input_stream = start_media_stream(
+            self.mrl, self.format, self.codec, self.sample_rate, self.channels
+        )
         self.output_stream = self._open_stream()
         self.playback_thread = Thread(target=self._playback)
         self.playback_thread.start()
@@ -40,10 +43,12 @@ class Player:
         if self.output_stream is None:
             raise ValueError('"self.stream" has not been set.')
 
+        print(f"Playing {self.mrl}")
+
         while True:
             data = self.input_stream.stdout.read(CHUNK_SIZE)
             if not data:
-                print("No data")
+                print("Playback complete")
                 break
 
             self.output_stream.write(data)
@@ -53,11 +58,19 @@ class Player:
             format=pyaudio.paInt16,
             channels=self.channels,
             rate=self.sample_rate,
-            output=True
+            output=True,
         )
 
 
-def start_media_stream(mrl: Path, format: str, codec: str, sample_rate: int, channels: int, start_time: int = 0) -> subprocess.Popen[bytes]:
+def start_media_stream(
+    mrl: Path,
+    format: str,
+    codec: str,
+    sample_rate: int,
+    channels: int,
+    start_time: int = 0,
+) -> subprocess.Popen[bytes]:
+    print("Starting ffmpeg process...")
     return subprocess.Popen(
         [
             "ffmpeg",
@@ -73,35 +86,25 @@ def start_media_stream(mrl: Path, format: str, codec: str, sample_rate: int, cha
             str(sample_rate),
             "-ac",
             str(channels),
-            "pipe:1"
+            "pipe:1",
         ],
         stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL
+        stderr=subprocess.DEVNULL,
     )
 
+
 def get_media_stream_info(mrl: Path) -> dict:
+    print("Parsing stream information...")
     result = subprocess.run(
-        [
-            "ffprobe", 
-            "-i", 
-            str(mrl), 
-            "-v", 
-            "error", 
-            "-show_streams", 
-            "-of", 
-            "json"
-        ], 
-        stdout=subprocess.PIPE, 
-        stderr=subprocess.PIPE, 
-        text=True
+        ["ffprobe", "-i", str(mrl), "-v", "error", "-show_streams", "-of", "json"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
     )
 
     result_json = result.stdout
     stream_info = dict(json.loads(result_json).get("streams", {})[0])
     return {
-        "sample_rate":  int(stream_info["sample_rate"]),
-        "channels": stream_info["channels"]
+        "sample_rate": int(stream_info["sample_rate"]),
+        "channels": stream_info["channels"],
     }
-
-
-
