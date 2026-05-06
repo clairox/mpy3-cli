@@ -1,6 +1,8 @@
 import sys
 import click
 from pathlib import Path
+
+from mpy3_cli.player import Player
     
 ACCEPTED_FILE_TYPES = [".mp3"]
 
@@ -17,6 +19,9 @@ def main(media_url_input: str):
         print(f"{media_url} is not an mp3 file.")
         sys.exit(1)
 
-    print(f"{media_url} is a valid mp3 file!")
+    player = Player(media_url)
+    player.play()
+
+
 
 

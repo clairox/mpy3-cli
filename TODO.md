@@ -1,0 +1,4 @@
+- [ ] Log useful player info
+- [ ] Improve output quality
+- [ ] Write Stream class for input and output streams
+- [ ] Clean up code 
