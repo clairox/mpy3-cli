@@ -5,7 +5,8 @@ from subprocess import Popen
 from threading import Thread
 
 import pyaudio
-from pyaudio import PyAudio, Stream
+from pyaudio import PyAudio
+from pyaudio import Stream as AudioStream
 
 from mpy3_cli.utils.noalsaerr import noalsaerr
 
@@ -22,18 +23,21 @@ class Player:
         self.sample_rate = stream_info["sample_rate"]
         self.channels = stream_info["channels"]
 
-        self.input_stream: Popen[bytes] | None = None
-        self.output_stream: Stream | None = None
+        self.input_stream: InputStream | None = None
+        self.output_stream: OutputStream | None = None
         self.playback_thread: Thread | None = None
 
         with noalsaerr():
             self.p: PyAudio = PyAudio()
 
     def play(self) -> None:
-        self.input_stream = start_media_stream(
+        file_stream_process_data = start_media_stream(
             self.mrl, self.format, self.codec, self.sample_rate, self.channels
         )
-        self.output_stream = self._open_stream()
+        audio_output_stream = self._open_stream()
+
+        self.input_stream = InputStream(file_stream_process_data)
+        self.output_stream = OutputStream(audio_output_stream)
         self.playback_thread = Thread(target=self._playback)
         self.playback_thread.start()
 
@@ -41,29 +45,45 @@ class Player:
         if self.input_stream is None:
             raise ValueError('"self.process" has not been set.')
 
-        if self.input_stream.stdout is None:
-            raise ValueError('"self.process.stdout" has not been set.')
-
         if self.output_stream is None:
             raise ValueError('"self.stream" has not been set.')
 
         print(f"Playing {self.mrl}")
 
         while True:
-            data = self.input_stream.stdout.read(CHUNK_SIZE)
+            data = self.input_stream.read(CHUNK_SIZE)
             if not data:
                 print("Playback complete")
                 break
 
             self.output_stream.write(data)
 
-    def _open_stream(self) -> Stream:
+    def _open_stream(self) -> AudioStream:
         return self.p.open(
             format=pyaudio.paInt16,
             channels=self.channels,
             rate=self.sample_rate,
             output=True,
         )
+
+
+class InputStream:
+    def __init__(self, process: Popen[bytes]) -> None:
+        self.process = process
+
+    def read(self, n: int = -1) -> bytes:
+        if self.process.stdout is None:
+            return bytes(0)
+
+        return self.process.stdout.read(n)
+
+
+class OutputStream:
+    def __init__(self, stream: AudioStream) -> None:
+        self.stream = stream
+
+    def write(self, frames: bytes) -> None:
+        self.stream.write(frames)
 
 
 def start_media_stream(
