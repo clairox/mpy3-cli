@@ -7,6 +7,8 @@ from threading import Thread
 import pyaudio
 from pyaudio import PyAudio, Stream
 
+from mpy3_cli.utils.noalsaerr import noalsaerr
+
 CHUNK_SIZE = 1024
 
 
@@ -22,8 +24,10 @@ class Player:
 
         self.input_stream: Popen[bytes] | None = None
         self.output_stream: Stream | None = None
-        self.p: PyAudio = PyAudio()
         self.playback_thread: Thread | None = None
+
+        with noalsaerr():
+            self.p: PyAudio = PyAudio()
 
     def play(self) -> None:
         self.input_stream = start_media_stream(
