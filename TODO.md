@@ -1,6 +1,7 @@
 # In progress
 
-# TODO
-- [ ] Build audio engine
+# Todo
+- [ ] Build out playback controller
 
 # Completed
+- [x] Build audio engine
