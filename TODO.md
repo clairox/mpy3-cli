@@ -1,4 +1,6 @@
-- [x] Log useful player info
-- [ ] Improve output quality
-- [ ] Write Stream class for input and output streams
-- [ ] Clean up code 
+# In progress
+
+# TODO
+- [ ] Build audio engine
+
+# Completed
