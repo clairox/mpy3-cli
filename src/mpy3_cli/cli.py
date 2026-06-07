@@ -3,7 +3,7 @@ from pathlib import Path
 
 import click
 
-from mpy3_cli.playback import PlaybackController as PC
+from mpy3_cli.ui import App
 
 ACCEPTED_FILE_TYPES = [".mp3"]
 
@@ -21,5 +21,5 @@ def main(media_url_input: str):
         print(f"{media_url} is not an mp3 file.")
         sys.exit(1)
 
-    player = PC(media_url)
-    player.play()
+    app = App(media_url)
+    app.run()
