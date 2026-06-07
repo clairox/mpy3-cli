@@ -56,7 +56,7 @@ class AudioEngine:
 
             self._output.write(data)
 
-    def _start_file_conversion_process(self) -> None:
+    def _start_file_transcoding_process(self) -> None:
         """Begin streaming bytes from media file into a pipe"""
 
         process = ffapi.transcode_to_pipe(
@@ -72,7 +72,7 @@ class AudioEngine:
     def _open_input_stream(self) -> None:
         """Setup input stream for playback"""
 
-        self._start_file_conversion_process()
+        self._start_file_transcoding_process()
         self._open_output_stream()
         self._playback_thread = Thread(target=self._playback)
         self._playback_thread.start()
