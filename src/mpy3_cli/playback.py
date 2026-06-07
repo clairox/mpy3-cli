@@ -14,7 +14,7 @@ class PlaybackController:
         pass
 
     def stop(self) -> None:
-        pass
+        self.engine.stop()
 
     def next(self) -> None:
         pass

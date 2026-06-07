@@ -36,8 +36,14 @@ class AudioEngine:
         self.format = DEFAULT_FORMAT
         self.codec = DEFAULT_CODEC
 
+        self.stopped = False
+
     def play(self) -> None:
         self._open_input_stream()
+
+    def stop(self) -> None:
+        if self._input and not self.stopped:
+            self.stopped = True
 
     def _playback(self) -> None:
         if self._input is None:
@@ -49,6 +55,10 @@ class AudioEngine:
         print(f"Playing {self.mrl}")
 
         while True:
+            if self.stopped:
+                print("Playback stopped")
+                break
+
             data = self._input.read(CHUNK_SIZE)
             if not data:
                 print("Playback complete")
