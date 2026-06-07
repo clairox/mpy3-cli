@@ -1,11 +1,13 @@
 from pathlib import Path
 
 from mpy3_cli.audio_engine import AudioEngine
+from mpy3_cli.media import Media
 
 
 class PlaybackController:
-    def __init__(self, mrl: Path) -> None:
-        self.engine: AudioEngine = AudioEngine(mrl)
+    def __init__(self, media: Media) -> None:
+        self.media = media
+        self.engine: AudioEngine = AudioEngine(media.mrl)
 
     def play(self) -> None:
         self.engine.play()

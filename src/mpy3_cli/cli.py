@@ -3,7 +3,7 @@ from pathlib import Path
 
 import click
 
-from mpy3_cli.ui import App
+from mpy3_cli.ui.app import App
 
 ACCEPTED_FILE_TYPES = [".mp3"]
 

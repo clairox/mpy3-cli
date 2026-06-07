@@ -1,7 +1,9 @@
 # In progress
+- [ ] UI
+- [ ] Audio time controls
 
 # Todo
-- [ ] Build out playback controller
+- [ ] Playback controller
 
 # Completed
-- [x] Build audio engine
+- [x] Audio engine
