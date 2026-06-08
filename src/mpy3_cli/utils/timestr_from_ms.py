@@ -1,4 +1,4 @@
-def time_from_ms(ms: int) -> str:
+def timestr_from_ms(ms: int) -> str:
     """
     Converts a time duration in milliseconds to a human-readable string format.
 
@@ -10,8 +10,8 @@ def time_from_ms(ms: int) -> str:
              or "mm:ss" if no hours are involved.
 
     Example:
-        time_from_ms(3600000)  # Returns "1:00:00"
-        time_from_ms(75000)    # Returns "1:15"
+        timestr_from_ms(3600000)  # Returns "1:00:00"
+        timestr_from_ms(75000)    # Returns "1:15"
     """
 
     total_seconds = ms // 1000

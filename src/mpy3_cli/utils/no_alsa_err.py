@@ -16,7 +16,7 @@ c_error_handler = ERROR_HANDLER_FUNC(py_error_handler)
 
 
 @contextmanager
-def noalsaerr():
+def no_alsa_err():
     """Suppress annoying ALSA errors"""
 
     asound = cdll.LoadLibrary("libasound.so")

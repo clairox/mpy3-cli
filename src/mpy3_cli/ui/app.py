@@ -26,3 +26,11 @@ class App(TextualApp):
         if event.key == "q":
             self.player.stop()
             self.exit()
+
+        if event.key == "space":
+            if not self.player.paused:
+                self.player.pause()
+                self.query_one(PlayerPanel).is_playing = False
+            else:
+                self.player.play()
+                self.query_one(PlayerPanel).is_playing = True

@@ -1,8 +1,9 @@
 from textual.app import RenderResult
+from textual.reactive import reactive
 from textual.widget import Widget
 
 from mpy3_cli.media import Media
-from mpy3_cli.utils.time_from_ms import time_from_ms
+from mpy3_cli.utils.timestr_from_ms import timestr_from_ms
 
 DEFAULT_ARTIST = "Unknown Artist"
 DEFAULT_DURATION = "--:--"
@@ -10,6 +11,9 @@ DEFAULT_TIME = "0:00"
 
 
 class PlayerPanel(Widget):
+    is_playing = reactive(True)
+    current_time = reactive(0)
+
     def __init__(self, media: Media) -> None:
         super().__init__()
         self.media = media
@@ -19,10 +23,10 @@ class PlayerPanel(Widget):
         self.duration = self.media.duration
 
     def render(self) -> RenderResult:
-        duration_timestring = time_from_ms(self.duration)
+        duration_timestring = timestr_from_ms(self.duration)
 
         return (
-            f"{str(self.media.title)} - Playing"
+            f"{str(self.media.title)} - {"Playing" if self.is_playing else "Paused"}"
             + f"\n{self.artist}"
-            + f"\n0:00 / {duration_timestring}"
+            + f"\n{timestr_from_ms(self.current_time)} / {duration_timestring}"
         )
