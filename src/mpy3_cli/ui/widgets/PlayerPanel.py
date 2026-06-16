@@ -12,7 +12,7 @@ DEFAULT_TIME = "0:00"
 
 class PlayerPanel(Widget):
     is_playing = reactive(True)
-    current_time = reactive(0)
+    time = reactive(0)
 
     def __init__(self, media: Media) -> None:
         super().__init__()
@@ -28,5 +28,5 @@ class PlayerPanel(Widget):
         return (
             f"{str(self.media.title)} - {"Playing" if self.is_playing else "Paused"}"
             + f"\n{self.artist}"
-            + f"\n{timestr_from_ms(self.current_time)} / {duration_timestring}"
+            + f"\n{timestr_from_ms(self.time)} / {duration_timestring}"
         )

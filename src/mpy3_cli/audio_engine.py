@@ -8,6 +8,7 @@ from pyaudio import PyAudio  # type: ignore
 from pyaudio import Stream as PyAudioStream  # type: ignore
 
 from mpy3_cli import ffapi
+from mpy3_cli.event import event_manager
 from mpy3_cli.media import Media
 from mpy3_cli.types import MediaInfo
 from mpy3_cli.utils.constants import BYTE, MILLISECONDS
@@ -30,6 +31,8 @@ class AudioEngine:
         self.media = media
         self.mrl = self.media.mrl
 
+        self.event_manager = event_manager
+
         self._input: InputStream | None = None
         self._output: OutputStream | None = None
         self._playback_thread: Thread | None = None
@@ -49,6 +52,7 @@ class AudioEngine:
 
         self.start_time: int | None = None
         self.bytes_transcoded = 0
+        self.time = 0
 
     def play(self) -> None:
         if self._input is None:
@@ -103,6 +107,11 @@ class AudioEngine:
 
             self._output.write(data)
             self.bytes_transcoded += len(data)
+
+            new_time = self.get_time()
+            if new_time > self.time:
+                self.time = new_time
+                self.event_manager.dispatch("player_time_changed", self.time)
 
     def _start_file_transcoding_process(self) -> None:
         """Begin streaming bytes from media file into a pipe"""

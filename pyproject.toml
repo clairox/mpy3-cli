@@ -12,11 +12,15 @@ dependencies = [
     "pathlib (>=1.0.1,<2.0.0)",
     "pyaudio (>=0.2.14,<0.3.0)",
     "textual (>=8.2.7,<9.0.0)",
+    "textual-dev (>=1.8.0,<2.0.0)",
 ]
 
 [tool.poetry]
 packages = [{include = "mpy3_cli", from = "src"}]
-scripts = {mpy3 = "mpy3_cli.__main__:main"}
+
+[tool.poetry.scripts]
+mpy3 = "mpy3_cli.__main__:main"
+textual = "textual_dev.cli:run"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
