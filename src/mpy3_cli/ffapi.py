@@ -3,6 +3,7 @@ import subprocess
 from pathlib import Path
 
 from mpy3_cli.types import MediaInfo
+from mpy3_cli.utils.constants import MILLISECONDS
 
 
 def transcode_to_pipe(
@@ -19,7 +20,7 @@ def transcode_to_pipe(
         [
             "ffmpeg",
             "-ss",
-            str(start_time),
+            str(start_time / MILLISECONDS),
             "-i",
             str(mrl),
             "-f",

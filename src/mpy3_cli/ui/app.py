@@ -1,5 +1,5 @@
+import time
 from pathlib import Path
-from typing import Any
 
 from textual.app import App as TextualApp
 from textual.app import ComposeResult
@@ -10,6 +10,8 @@ from mpy3_cli.media import Media
 from mpy3_cli.player import MediaPlayer
 from mpy3_cli.ui.widgets.PlayerPanel import PlayerPanel
 
+KEY_DEBOUNCE_TIME = 0.0625
+
 
 class App(TextualApp):
     def __init__(self, mrl: Path) -> None:
@@ -19,6 +21,8 @@ class App(TextualApp):
 
         self.player = MediaPlayer(self.media)
         self.pc = self.player.pc
+
+        self.block_key_events_until = -1
 
         event_manager.attach("player_time_changed", self.on_time_update)
 
@@ -31,14 +35,29 @@ class App(TextualApp):
         self.query_one(PlayerPanel).time = event.value
 
     def on_key(self, event: Key) -> None:
-        if event.key == "q":
+        if time.time() < self.block_key_events_until:
+            return
+        elif self.block_key_events_until >= 0:
+            self.block_key_events_until = -1
+
+        key = event.key
+
+        if key == "q":
             self.pc.stop()
             self.exit()
 
-        if event.key == "space":
+        if key == "space":
             if not self.pc.paused:
                 self.pc.pause()
                 self.query_one(PlayerPanel).is_playing = False
             else:
                 self.pc.play()
                 self.query_one(PlayerPanel).is_playing = True
+
+        if key == "right":
+            self.pc.fast_forward()
+
+        if key == "left":
+            self.pc.rewind()
+
+        self.block_key_events_until = time.time() + KEY_DEBOUNCE_TIME

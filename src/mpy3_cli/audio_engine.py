@@ -12,7 +12,6 @@ from mpy3_cli.event import event_manager
 from mpy3_cli.media import Media
 from mpy3_cli.types import MediaInfo
 from mpy3_cli.utils.constants import BYTE, MILLISECONDS
-from mpy3_cli.utils.get_system_time import get_system_time
 from mpy3_cli.utils.no_alsa_err import no_alsa_err
 
 CHUNK_SIZE = 1024
@@ -50,7 +49,7 @@ class AudioEngine:
         self.paused = False
         self.stopped = False
 
-        self.bytes_transcoded = 0
+        self.current_byte_offset = 0
         self.time = 0
 
     def play(self) -> None:
@@ -67,8 +66,28 @@ class AudioEngine:
         if self._input and not self.stopped:
             self.stopped = True
 
+    def seek(self, time: int) -> None:
+        if self._input is None:
+            return
+
+        if time < 0:
+            time = 0
+        elif time > self.media.duration:
+            time = self.media.duration
+
+        self._kill_file_transcoding_process()
+        self._start_file_transcoding_process(time)
+
+        # Update byte progress
+        current_sample = round((time / MILLISECONDS) * self.media_info["sample_rate"])
+        self.current_byte_offset = current_sample * (
+            self.media_info["channels"] * self.bytes_per_sample
+        )
+
+        self.time = time
+
     def get_time(self) -> int:
-        current_sample = self.bytes_transcoded / (
+        current_sample = self.current_byte_offset / (
             self.media_info["channels"] * self.bytes_per_sample
         )
         time = math.floor(
@@ -100,14 +119,20 @@ class AudioEngine:
                 break
 
             self._output.write(data)
-            self.bytes_transcoded += len(data)
+            self.current_byte_offset += len(data)
 
             new_time = self.get_time()
             if new_time > self.time:
                 self.time = new_time
                 self.event_manager.dispatch("player_time_changed", self.time)
 
-    def _start_file_transcoding_process(self) -> None:
+        self._input.process.terminate()
+        self._output.sink.stop_stream()
+        self._output.sink.close()
+        self._input = None
+        self._output = None
+
+    def _start_file_transcoding_process(self, start_time: int = 0) -> None:
         """Begin streaming bytes from media file into a pipe"""
 
         process = ffapi.transcode_to_pipe(
@@ -116,9 +141,16 @@ class AudioEngine:
             self.codec,
             self.media_info["sample_rate"],
             self.media_info["channels"],
+            start_time,
         )
 
         self._input = InputStream(process)
+
+    def _kill_file_transcoding_process(self) -> None:
+        if self._input is None:
+            return
+
+        self._input.process.kill()
 
     def _open_input_stream(self) -> None:
         """Setup input stream for playback"""
@@ -126,7 +158,6 @@ class AudioEngine:
         self._start_file_transcoding_process()
         self._open_output_stream()
         self._playback_thread = Thread(target=self._playback)
-        self.start_time = system_time()
         self._playback_thread.start()
 
     def _open_output_stream(self) -> None:
