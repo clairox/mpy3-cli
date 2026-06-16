@@ -50,7 +50,6 @@ class AudioEngine:
         self.paused = False
         self.stopped = False
 
-        self.start_time: int | None = None
         self.bytes_transcoded = 0
         self.time = 0
 
@@ -69,19 +68,14 @@ class AudioEngine:
             self.stopped = True
 
     def get_time(self) -> int:
-        if not self.start_time:
-            return 0
-
-        elapsed_time = get_system_time() - self.start_time
-
         current_sample = self.bytes_transcoded / (
             self.media_info["channels"] * self.bytes_per_sample
         )
-        time_from_bytes = math.floor(
+        time = math.floor(
             (current_sample / self.media_info["sample_rate"]) * MILLISECONDS
         )
 
-        return clamp(time_from_bytes, elapsed_time, self.media.duration)
+        return time
 
     def _playback(self) -> None:
         if self._input is None:
@@ -131,8 +125,8 @@ class AudioEngine:
 
         self._start_file_transcoding_process()
         self._open_output_stream()
-        self.start_time = system_time()
         self._playback_thread = Thread(target=self._playback)
+        self.start_time = system_time()
         self._playback_thread.start()
 
     def _open_output_stream(self) -> None:

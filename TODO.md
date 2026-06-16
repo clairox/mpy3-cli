@@ -1,9 +1,9 @@
 # In progress
-- [ ] UI
-- [ ] Audio time controls
+- [ ] Playback controller
+  - [ ] Rewind/FF control
 
 # Todo
-- [ ] Playback controller
 
 # Completed
 - [x] Audio engine
+- [x] Time display

@@ -18,14 +18,14 @@ class PlaybackController:
     def stop(self) -> None:
         self.__engine.stop()
 
-    def next(self) -> None:
-        pass
-
-    def previous(self) -> None:
-        pass
-
     def fast_forward(self) -> None:
         pass
 
     def rewind(self) -> None:
+        pass
+
+    def next(self) -> None:
+        pass
+
+    def previous(self) -> None:
         pass
