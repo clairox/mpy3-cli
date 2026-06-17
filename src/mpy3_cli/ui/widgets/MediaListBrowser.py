@@ -9,7 +9,14 @@ from mpy3_cli.utils.timestr_from_ms import timestr_from_ms
 
 
 class MediaListBrowser(Widget):
-    selected_media_idx = reactive(0)
+    DEFAULT_CSS = """
+    MediaListBrowser {
+        layout: vertical;
+        height: auto;
+    }
+    """
+    # TODO: Find less performance-intensive way to do this
+    selected_media_idx = reactive(0, recompose=True)
 
     def __init__(self, media_list: list[Media]) -> None:
         super().__init__()
@@ -17,10 +24,11 @@ class MediaListBrowser(Widget):
         self.media_list = media_list
 
     def compose(self) -> ComposeResult:
-        yield MediaListBrowserItem(
-            self.media_list[0],
-            classes=("selected" if self.selected_media_idx == 0 else None),
-        )
+        for idx, media in enumerate(self.media_list):
+            yield MediaListBrowserItem(
+                media,
+                classes=("selected" if self.selected_media_idx == idx else None),
+            )
 
 
 class MediaListBrowserItem(Widget):
@@ -37,12 +45,12 @@ class MediaListBrowserItem(Widget):
 
     MediaListBrowserItem > .left {
         content-align: left middle;
-        width: 1fr;
+        width: 90%;
     }
 
     MediaListBrowserItem > .right {
         content-align: right middle;
-        width: 1fr;
+        width: 10%;
     }
     """
 

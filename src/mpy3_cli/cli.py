@@ -5,21 +5,15 @@ import click
 
 from mpy3_cli.ui.app import App
 
-ACCEPTED_FILE_TYPES = [".mp3"]
-
 
 @click.command()
-@click.argument("media_url_input")
-def main(media_url_input: str):
-    media_url = Path(media_url_input)
+@click.argument("media_dir_input")
+def main(media_dir_input: str):
+    media_dir = Path(media_dir_input)
 
-    if not media_url.exists() or not media_url.is_file():
-        print(f"{media_url} is not a valid file.")
+    if not media_dir.exists() or not media_dir.is_dir():
+        print(f"{media_dir} is not a valid directory.")
         sys.exit(1)
 
-    if media_url.suffix not in ACCEPTED_FILE_TYPES:
-        print(f"{media_url} is not an mp3 file.")
-        sys.exit(1)
-
-    app = App(media_url)
+    app = App(media_dir)
     app.run()
