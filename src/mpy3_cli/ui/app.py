@@ -59,13 +59,13 @@ class App(TextualApp):
                 self.pc.play()
                 self.query_one(PlayerPanel).is_playing = True
 
-        if key == "right":
+        if key == "right" or key == "l":
             self.pc.fast_forward()
 
-        if key == "left":
+        if key == "left" or key == "h":
             self.pc.rewind()
 
-        if key == "down":
+        if key == "down" or key == "j":
             current_idx = self.query_one(MediaListBrowser).selected_media_idx
             new_idx = current_idx + 1
 
@@ -74,7 +74,7 @@ class App(TextualApp):
             else:
                 self.query_one(MediaListBrowser).selected_media_idx = new_idx
 
-        if key == "up":
+        if key == "up" or key == "k":
             current_idx = self.query_one(MediaListBrowser).selected_media_idx
             new_idx = current_idx - 1
 
