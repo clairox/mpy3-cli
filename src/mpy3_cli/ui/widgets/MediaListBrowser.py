@@ -25,9 +25,18 @@ class MediaListBrowser(Widget):
 
     def compose(self) -> ComposeResult:
         for idx, media in enumerate(self.media_list):
+            classes = ""
+
+            if self.selected_media_idx == idx:
+                classes = "selected"
+            if idx % 2 == 0:
+                classes += " even"
+            else:
+                classes += " odd"
+
             yield MediaListBrowserItem(
                 media,
-                classes=("selected" if self.selected_media_idx == idx else None),
+                classes=(classes.lstrip() if classes != "" else None),
             )
 
 
@@ -39,8 +48,12 @@ class MediaListBrowserItem(Widget):
         height: auto;
     }
 
+    MediaListBrowserItem.even {
+        background: gray 15%;
+    }
+
     MediaListBrowserItem.selected {
-        background: blue 50%;
+        background: #0186cc;
     }
 
     MediaListBrowserItem > .left {
