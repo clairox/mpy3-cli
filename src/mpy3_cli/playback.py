@@ -26,8 +26,8 @@ class PlaybackController:
     def rewind(self) -> None:
         self._engine.seek(self._engine.get_time() - SEEK_INTERVAL)
 
-    def next(self) -> None:
+    def next_track(self) -> None:
         pass
 
-    def previous(self) -> None:
+    def previous_track(self) -> None:
         pass

@@ -1,5 +1,4 @@
 import math
-import time as t
 from subprocess import Popen
 from threading import Thread
 
@@ -194,11 +193,3 @@ class OutputStream:
 
     def write(self, frames: bytes) -> None:
         self.sink.write(frames)
-
-
-def system_time() -> int:
-    return int(t.time() * MILLISECONDS)
-
-
-def clamp(value: int, min_value: int, max_value: int) -> int:
-    return min(max(min_value, value), max_value)

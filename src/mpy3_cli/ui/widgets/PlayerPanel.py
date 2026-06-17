@@ -3,19 +3,17 @@ from textual.reactive import reactive
 from textual.widget import Widget
 
 from mpy3_cli.media import Media
+from mpy3_cli.utils.constants import DEFAULT_ARTIST
 from mpy3_cli.utils.timestr_from_ms import timestr_from_ms
-
-DEFAULT_ARTIST = "Unknown Artist"
-DEFAULT_DURATION = "--:--"
-DEFAULT_TIME = "0:00"
 
 
 class PlayerPanel(Widget):
-    is_playing = reactive(True)
+    is_playing = reactive(False)
     time = reactive(0)
 
     def __init__(self, media: Media) -> None:
         super().__init__()
+
         self.media = media
 
         self.title = self.media.title

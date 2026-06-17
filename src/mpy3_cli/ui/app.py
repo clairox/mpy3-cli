@@ -8,6 +8,7 @@ from textual.events import Key
 from mpy3_cli.event import event_manager
 from mpy3_cli.media import Media
 from mpy3_cli.player import MediaPlayer
+from mpy3_cli.ui.widgets.MediaListBrowser import MediaListBrowser
 from mpy3_cli.ui.widgets.PlayerPanel import PlayerPanel
 
 KEY_DEBOUNCE_TIME = 0.0625
@@ -27,9 +28,10 @@ class App(TextualApp):
         event_manager.attach("player_time_changed", self.on_time_update)
 
     def compose(self) -> ComposeResult:
-        self.pc.play()
-
-        yield PlayerPanel(self.media)
+        # self.pc.play()
+        #
+        # yield PlayerPanel(self.media)
+        yield MediaListBrowser([self.media])
 
     def on_time_update(self, event) -> None:
         self.query_one(PlayerPanel).time = event.value
