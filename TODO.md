@@ -1,5 +1,5 @@
 # In progress
-- [ ] File browsing
+- [ ] Media browser caching
 
 # Todo
 
@@ -7,3 +7,4 @@
 - [x] Audio engine
 - [x] Time display
 - [x] Rewind/FF control
+- [x] File browsing
